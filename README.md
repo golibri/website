@@ -13,7 +13,7 @@ Get Metadata from HTML
 
 # usage
 ````go
-ws := Parse("website-html-string")
+ws := website.Parse("website-html-string")
 ````
 
 # data fields
