@@ -1,16 +1,17 @@
-// Extract metadata from websites.
 package website
 
 import (
 	"bytes"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/endeveit/guesslanguage"
+	"github.com/golibri/fetch"
 	"regexp"
 	"strings"
 )
 
+// Website contains all relevant metadata from a HTML web page
 type Website struct {
-	Url         string
+	URL         string
 	Body        string
 	Language    string
 	Title       string
@@ -21,7 +22,8 @@ type Website struct {
 	Tags        []string
 }
 
-func Parse(s string) Website {
+// Parse executes a given HTML string and transforms it into a Website{} struct
+func Parse(s string) (Website, error) {
 	doc := docFromString(s)
 	w := Website{Body: s}
 	w.Title = titleFromDoc(&doc)
@@ -30,9 +32,22 @@ func Parse(s string) Website {
 	w.Favicon = faviconFromDoc(&doc)
 	w.Feeds = feedsFromDoc(&doc, s)
 	w.Tags = tagsFromDoc(&doc)
-	w.Url = canonicalFromDoc(&doc)
+	w.URL = canonicalFromDoc(&doc)
 	w.Language = detectLanguage(doc.Find("body").Text())
-	return w
+	return w, nil
+}
+
+// FromURL parses a Website directly from a given URL
+func FromURL(URL string) (Website, error) {
+	page, err := fetch.Get(URL)
+	if err != nil {
+		return Website{}, err
+	}
+	w, err := Parse(page.Body)
+	if err != nil {
+		return Website{}, err
+	}
+	return w, nil
 }
 
 func detectLanguage(str string) string {

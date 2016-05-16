@@ -6,6 +6,9 @@
 # golibri/website
 Get Metadata from HTML
 
+# Requirements
+`go get -u github.com/golibri/fetch`
+
 # installation
 `go get -u github.com/golibri/website`
 
@@ -14,7 +17,8 @@ Get Metadata from HTML
 import "github.com/golibri/website"
 
 func main() {
-    //... get a HTML string from anywhere, for example with golibri/fetch
+    ws := website.FromURL("http://example.com/whatever")
+    // OR:
     ws := website.Parse("website-html-string")
     // ws is a Website object, see below
 }
@@ -25,7 +29,7 @@ A **Website** has the following data fields:
 
 ````go
 type Website struct {
-    Url         string
+    URL         string
     Body        string
     Language    string
     Title       string
